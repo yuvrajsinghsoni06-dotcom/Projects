@@ -1,0 +1,20 @@
+{
+  "NVIDIA A100 (80GB)": {
+    "flops": 312,
+    "vram": 80,
+    "cost_on_demand": 4.10,
+    "cost_spot": 1.25
+  },
+  "NVIDIA T4 (16GB)": {
+    "flops": 65,
+    "vram": 16,
+    "cost_on_demand": 0.50,
+    "cost_spot": 0.15
+  },
+  "NVIDIA V100 (32GB)": {
+    "flops": 130,
+    "vram": 32,
+    "cost_on_demand": 3.06,
+    "cost_spot": 0.90
+  }
+}

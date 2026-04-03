@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHRONOS.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="chronos.css">
+</head>
+<body class="p-4 md:p-8 gap-4" id="main-body">
+
+    <div class="scanlines"></div>
+
+    <div id="game-over" class="fixed inset-0 bg-black z-[100] hidden flex-col items-center justify-center text-center p-8">
+        <h1 class="text-6xl text-red-600 font-bold mb-4">SYSTEM CRASHED</h1>
+        <p class="text-xl text-gray-400 mb-8 max-w-lg font-mono">
+            > ERROR: EFFICIENCY_ZERO<br>
+            > RECOVERY: IMPOSSIBLE
+        </p>
+        <button onclick="factoryReset()" class="border border-red-500 text-red-500 px-8 py-4 hover:bg-red-500 hover:text-black font-bold font-mono">INITIATE_HARD_RESET</button>
+    </div>
+
+    <div id="contract-overlay" class="fixed inset-0 bg-black z-[90] flex flex-col items-center justify-center font-mono p-4 text-center transition-opacity duration-1000">
+        <div id="contract-box" class="max-w-2xl border border-[#00ff41] p-8 bg-[#001100] shadow-[0_0_50px_rgba(0,255,65,0.2)] w-full">
+            <h1 class="text-4xl md:text-6xl text-[#00ff41] mb-6 font-bold">./INIT_CHRONOS</h1>
+            <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+                TIME IS THE ONLY CURRENCY.<br>
+                WASTE IT, AND THE SYSTEM WILL CRASH.<br>
+                <br>
+                DO YOU ACCEPT THE PROTOCOL?
+            </p>
+            <input type="text" id="contract-input" class="text-center text-[#00ff41] border-b border-transparent focus:border-[#00ff41] bg-transparent outline-none w-full" placeholder="TYPE 'I ACCEPT'" autocomplete="off" autofocus>
+        </div>
+    </div>
+
+    <header class="flex justify-between items-end border-b-2 border-current pb-4 shrink-0">
+        <div>
+            <h1 class="text-4xl md:text-5xl font-bold leading-none">CHRONOS<span class="animate-pulse">_</span>OS</h1>
+            <div class="text-xs opacity-70 flex gap-4 mt-2">
+                <span>BUILD: v2.3 // <span id="clock">00:00:00</span></span>
+            </div>
+        </div>
+        <div class="flex flex-col items-end gap-2">
+            <div class="flex gap-2 text-xs">
+                <button onclick="switchView('terminal')" id="btn-term" class="nav-btn active">TERMINAL</button>
+                <button onclick="switchView('dashboard')" id="btn-dash" class="nav-btn">ANALYTICS</button>
+                <button onclick="switchView('roadmap')" id="btn-road" class="nav-btn">ROADMAP</button>
+            </div>
+            <button onclick="factoryReset()" class="text-[10px] text-red-500 opacity-50 hover:opacity-100">[RESET]</button>
+        </div>
+    </header>
+
+    <main id="view-terminal" class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-6 min-h-0 pt-4 transition-opacity duration-300">
+        <div class="md:col-span-4 flex flex-col gap-4">
+            <div class="panel h-48 justify-between" id="health-panel">
+                <div class="flex justify-between font-bold">
+                    <span>SYSTEM_INTEGRITY</span> <span id="hp-text">100%</span>
+                </div>
+                <div class="w-full bg-[#1a1a1a] h-8 border border-current relative overflow-hidden">
+                    <div id="hp-bar" class="h-full bg-current transition-all duration-500" style="width: 100%;"></div>
+                </div>
+                <div class="text-xs opacity-70 mt-2">
+                    > STATUS: <span id="system-status">OPTIMAL</span>
+                </div>
+            </div>
+
+            <div class="panel flex-1 overflow-hidden">
+                <div class="text-xs mb-2 font-bold">COMMIT_HISTORY_LOG</div>
+                <div id="heatmap" class="grid-map overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <div class="md:col-span-8 flex flex-col gap-4">
+            <div class="panel flex-1 overflow-hidden">
+                <div class="flex justify-between border-b border-current pb-2 mb-2">
+                    <span>ACTIVE_PROCESSES</span> <span>PID: AUTO</span>
+                </div>
+                <div id="task-list" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
+            </div>
+
+            <div class="panel h-32 overflow-hidden">
+                <div class="text-xs opacity-50 mb-1 border-b border-gray-800">AUDIT_TRAIL</div>
+                <div id="audit-log" class="flex-1 overflow-y-auto font-mono text-[10px] space-y-1"></div>
+            </div>
+
+            <div class="h-16 shrink-0 flex items-end">
+                <form id="cmd-form" class="flex items-center w-full border-b-2 border-current pb-2">
+                    <span class="mr-4 text-2xl animate-pulse">></span>
+                    <input type="text" id="cmd-input" placeholder="ENTER COMMAND..." autocomplete="off">
+                    <span class="cursor-block ml-1"></span>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <main id="view-dashboard" class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-6 min-h-0 pt-4 hidden transition-opacity duration-300">
+        <div class="md:col-span-4 flex flex-col gap-4">
+            <div class="panel h-full">
+                <h2 class="text-xl font-bold border-b border-current pb-2 mb-4">EFFICIENCY_RATING</h2>
+                <div class="flex items-center justify-center flex-1">
+                    <div class="relative w-40 h-40 flex items-center justify-center border-4 border-current rounded-full">
+                        <span id="efficiency-score" class="text-4xl font-bold">0%</span>
+                        <div class="absolute inset-0 animate-pulse opacity-20 bg-current rounded-full"></div>
+                    </div>
+                </div>
+                <div class="mt-4 space-y-4">
+                    <div>
+                        <div class="flex justify-between text-xs mb-1"><span>COMPLETION_RATE</span> <span id="completion-text">0%</span></div>
+                        <div class="stat-bar-bg"><div id="bar-completion" class="stat-bar-fill" style="width: 0%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-1"><span>DISTRACTION_LEVEL</span> <span id="violation-text">0%</span></div>
+                        <div class="stat-bar-bg"><div id="bar-violation" class="stat-bar-fill bg-red-500" style="width: 0%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:col-span-8 flex flex-col gap-4">
+            <div class="panel h-1/2">
+                <h2 class="text-xl font-bold border-b border-current pb-2 mb-4">RAW_DATA_METRICS</h2>
+                <div class="grid grid-cols-3 gap-4 text-center h-full items-center">
+                    <div class="p-4 border border-gray-800">
+                        <div class="text-4xl font-bold mb-2" id="stat-done">0</div>
+                        <div class="text-xs opacity-70">TASKS_EXECUTED</div>
+                    </div>
+                    <div class="p-4 border border-gray-800">
+                        <div class="text-4xl font-bold mb-2 text-blue-400" id="stat-pending">0</div>
+                        <div class="text-xs opacity-70">PENDING_THREADS</div>
+                    </div>
+                    <div class="p-4 border border-gray-800">
+                        <div class="text-4xl font-bold mb-2 text-red-500" id="stat-waste">0</div>
+                        <div class="text-xs opacity-70">VIOLATIONS</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel h-1/2 overflow-hidden">
+                <h2 class="text-xl font-bold border-b border-current pb-2 mb-2 text-red-500">NON_PRODUCTIVITY_LOG</h2>
+                <div class="flex-1 overflow-y-auto font-mono text-xs space-y-2" id="waste-log-list"></div>
+            </div>
+        </div>
+    </main>
+
+    <main id="view-roadmap" class="flex-1 flex flex-col gap-6 min-h-0 pt-4 hidden transition-opacity duration-300">
+        <div class="panel flex-1">
+            <div class="flex justify-between items-center border-b border-current pb-2 mb-4">
+                <h2 class="text-xl font-bold">./ROADMAP_AI_ENTREPRENEUR.txt</h2>
+                <div class="flex gap-2">
+                    <span id="roadmap-status" class="text-xs self-center mr-2 opacity-70">MODE: READ_ONLY</span>
+                    <button onclick="toggleRoadmapEdit()" id="btn-edit-map" class="nav-btn">EDIT</button>
+                    <button onclick="saveRoadmapContent()" id="btn-save-map" class="nav-btn hidden bg-[#002200]">SAVE</button>
+                </div>
+            </div>
+            
+            <div id="roadmap-container" class="flex-1 overflow-hidden relative">
+                <div id="roadmap-display" class="roadmap-display h-full overflow-y-auto p-2 text-sm text-gray-300">
+                    > LOADING PROTOCOLS...
+                </div>
+                <textarea id="roadmap-editor" class="roadmap-editor hidden bg-black text-[#00ff41]" spellcheck="false" placeholder="// PASTE YOUR ROADMAP HERE..."></textarea>
+            </div>
+        </div>
+    </main>
+
+    <script src="chronos.js"></script>
+</body>
+</html>
