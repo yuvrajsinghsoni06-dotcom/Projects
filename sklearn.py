@@ -27,20 +27,20 @@
 # print(a)
 
 
-def gen_prime(start , end):
-    for num in range(start , end +1):
-        if num < 2:
-            continue
-        is_prime = True
-        for i in range(2,num):
-            if num % i ==0:
-                is_prime = False
-                break
-        if is_prime:
-            yield num
+# def gen_prime(start , end):
+#     for num in range(start , end +1):
+#         if num < 2:
+#             continue
+#         is_prime = True
+#         for i in range(2,num):
+#             if num % i ==0:
+#                 is_prime = False
+#                 break
+#         if is_prime:
+#             yield num
 
-if __name__ == "__main__":
-    prime_gen = gen_prime(10,50)
-    for prime in prime_gen:
-        print(prime)
+# if __name__ == "__main__":
+#     prime_gen = gen_prime(10,50)
+#     for prime in prime_gen:
+#         print(prime)
 
