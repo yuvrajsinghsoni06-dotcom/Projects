@@ -1,60 +1,47 @@
-def print_header():
-    print("*" * 75)
-    print("*" + "Welcome Champion!".center(73) + "*")
-    print("*" + "This Program will ensure and Manage your Daily Tasks".center(73) + "*")
-    print("*" * 75)
-
-def get_tasks():
-    tasks = []
-    times = []
-    while True:
-        task = input("Enter a task (or press Enter to finish): ")
-        if task == "":
-            break
-        time = input("Enter estimated time for this task (e.g., '30minutes', '2hours'): ")
-        tasks.append(task)
-        times.append(time)
-    return tasks, times
+import streamlit as st
+import pandas as pd
+import numpy as np
 
 def main():
-    print_header()
-    task_list, task_timeline = get_tasks()
-    task_status = ["Pending"] * len(task_list)
+    # 1. Initialize Context-Dependent Data
+    # We check if 'df' exists in session_state to prevent crashes on refresh
+    if 'df' not in st.session_state:
+        # Using Pandas to create the initial structure
+        st.session_state.df = pd.DataFrame(columns=['Task', 'Time', 'Status'])
 
-    while True:
-        print("\nAvailable commands:")
-        print("1. View tasks (v)")
-        print("2. Mark task as complete (c)")
-        print("3. Exit (exit)")
+    # 2. Web UI Elements
+    st.title("🏆 Champion Task Manager")
+    
+    # Sidebar for Inputs
+    with st.sidebar:
+        st.header("Add New Task")
+        task_input = st.text_input("What needs to be done?")
+        time_input = st.number_input("Estimated Minutes", min_value=5, step=5)
         
-        operation = input("\nEnter command: ").lower()
+        if st.button("Add to List"):
+            if task_input:
+                # Using Pandas to append data
+                new_task = pd.DataFrame({
+                    'Task': [task_input], 
+                    'Time': [time_input], 
+                    'Status': ['Pending']
+                })
+                st.session_state.df = pd.concat([st.session_state.df, new_task], ignore_index=True)
+                st.success("Task added!")
+            else:
+                st.error("Please enter a task name.")
+
+    # 3. Data Display & Logic
+    if not st.session_state.df.empty:
+        st.write("### Your Schedule")
+        st.table(st.session_state.df)
         
-        if operation == "exit":
-            print("\nYou did it Champion, See you Again!")
-            break
-        elif operation == "v":
-            print("\n" + "=" * 75)
-            print(f"{'Task':<30}{'Time':<15}{'Status':<15}")
-            print("-" * 75)
-            for i in range(len(task_list)):
-                print(f"{task_list[i]:<30}{task_timeline[i]:<15}{task_status[i]:<15}")
-            print("=" * 75)
-        elif operation == "c":
-            print("\nCurrent tasks:")
-            for i in range(len(task_list)):
-                print(f"{i+1}. {task_list[i]} ({task_status[i]})")
-            try:
-                task_num = int(input("\nEnter task number to mark as complete: ")) - 1
-                if 0 <= task_num < len(task_list):
-                    task_status[task_num] = "Completed"
-                    print(f"\n'{task_list[task_num]}' marked as completed!")
-                else:
-                    print("\nInvalid task number!")
-            except ValueError:
-                print("\nPlease enter a valid number!")
-        else:
-            print("\nInvalid command! Please try again.")
+        # NumPy Logic: Summing values from the DataFrame
+        total_time = np.sum(st.session_state.df['Time'].values)
+        st.metric("Total Workload", f"{total_time} mins")
+    else:
+        st.info("Your task list is empty. Add something in the sidebar!")
 
 if __name__ == "__main__":
+    # This block ensures the script only runs when called correctly
     main()
-       
